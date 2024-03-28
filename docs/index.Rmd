@@ -1,0 +1,136 @@
+---
+title: "Airbnb Europe Cities"
+author: "Meiry Fernanda Diniz"
+date: "21/03/2024"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+```
+
+# Airbnb Price For Europe Cities
+
+**Airbnb Price For Europe Cities** is a Capstone Project that was developed to demonstrate the skills I acquired on the [Inco Academy's](https://incoacademy.ie/) Data Analytics course.
+
+This analysis was developed to help a fictitious client (a couple) to decide which would be the best city in Europe to purchase a rental property. In this case, my client informed me which were the five cities they were more interest in and with this information I developed the analysis.
+
+Visit the live version of the project: [**Airbnb Price For Europe Cities**](https://docs.google.com/presentation/d/1s-5Ag5RQlRqq2wdLGUBAG_k1hN-FihLLLp62k4eZNXU/edit?usp=sharing)
+
+------------------------------------------------------------------------
+
+> ## Contents
+
+-   [PREPARING DATA](#preparing-data)
+-   [PROCESSING DATA](#processing-data)
+-   [ANALYSING DATA](#analysing-data)
+-   [SHARING DATA](#sharing-data)
+-   [TOOLS](#tools)
+-   [RESOURCE](#resource)
+-   [CREDITS](#credits)
+
+------------------------------------------------------------------------
+
+> ## Preparing Data {#preparing-data}
+
+The dataset used to develop this analysis was imported from [Kaggle](https://www.kaggle.com/).
+
+------------------------------------------------------------------------
+
+> ## Processing Data {#processing-data}
+
+[Google Sheets](https://docs.google.com/spreadsheets/create) was used to process (clean) data. `Trim whitespace`, `filter` and `conditional formating` were used to find and eliminate any errors and inaccuracies that could get in the way of results.
+
+[Posit Cloud](https://posit.cloud/) was also used to processing data to be analysed using R.
+
+-   **Code:**
+
+```{r}
+library(readr)
+airbnb_europe_cities <- read_csv("airbnb_europe_cities.csv",
+                          show_col_types = FALSE)
+airbnb_selected_data <- airbnb_europe_cities %>% 
+  mutate(day = ifelse(weekends, "weekend", "weekday"),
+         daily_price = price / 2) %>% 
+  select(city, day, daily_price, room_type, person_capacity,
+         quant_bedrooms, city_center_dist_km, metro_dist_km) %>% 
+  filter(room_type == 'Entire home/apt' & city %in% c('Amsterdam',
+         'Barcelona','Lisbon', 'London', 'Paris')) %>% 
+  group_by(city, day) %>% 
+  arrange(city, day, desc(daily_price))
+
+(airbnb_selected_data) 
+
+```
+
+-   **Expected Outcome:**
+
+    -   Create new columns to have prices returned by weekday and weekend, and also have rent daily prices per person returned;
+
+    -   Have just columns that need to be shown selected;
+
+    -   Filter the dataset to have only data that matches the clients' request returned;
+
+    -   Have daily price returned in descending order, and group this information by city and day.
+
+------------------------------------------------------------------------
+
+> ## Analysing Data {#analysing-data}
+
+[Posit Cloud](https://posit.cloud/) was used to analyse data using R.
+
+-   **Code:**
+
+```{r}
+airbnb_avg_price <- airbnb_selected_data %>%
+  group_by(city, day) %>%
+  summarize(avg_price = mean(daily_price), .groups = "drop") %>%
+  arrange(desc(avg_price))
+
+knitr::kable(airbnb_avg_price)
+```
+
+-   **Expected Outcome:**
+
+    -   Have the average daily rental price per person returned for each city in the dataset.
+
+[Tableau](https://public.tableau.com/) was also used to create charts to analyse data and better understand its patterns.
+
+[Click here](https://public.tableau.com/views/AirbnbEuropeCities/Sheet1?:language=en-US&:sid=&:display_count=n&:origin=viz_share_link) to see the project on Tableau.
+
+------------------------------------------------------------------------
+
+> ## Sharing Data {#sharing-data}
+
+[Google Slides](https://www.google.com/slides/about/) was used to create the presentation for this project.
+
+Visit the live version of the project: [**Airbnb Price For Europe Cities**](https://docs.google.com/presentation/d/1s-5Ag5RQlRqq2wdLGUBAG_k1hN-FihLLLp62k4eZNXU/edit?usp=sharing)
+
+------------------------------------------------------------------------
+
+> ## Tools {#tools}
+
+-   [Kaggle](https://www.kaggle.com/);
+-   [Google Sheets](https://docs.google.com/spreadsheets/create);
+-   [Google Slides](https://www.google.com/slides/about/);
+-   [Posit Cloud](https://posit.cloud/);
+-   [Tableau](https://public.tableau.com/).
+
+------------------------------------------------------------------------
+
+> ## Resource {#resource}
+
+In addition to the course content I used [Stack Overflow](http://stackoverflow.com) to do research to develop my analysis.
+
+------------------------------------------------------------------------
+
+> ## Credits {#credits}
+
+A public dataset from [Kaggle](https://www.kaggle.com/) was used to develop this analysis.
+
+[Click here](https://www.kaggle.com/datasets/cahyaalkahfi/airbnb-european-cities-join) to see the original dataset.
+
+[Click here](https://docs.google.com/spreadsheets/d/1y2_6Rk03bTh8WOns625Qk70UfrxcSI6SQgE7k8yNVoI/edit#gid=0) to see the processed dataset.
